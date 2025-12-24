@@ -122,7 +122,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "tests/,tests.yml,pytest.ini,backend/,frontend/,nginx/"
+        source: "tests/,tests.yml,pytest.ini,backend/,frontend/,nginx/,kittygram_workflow.yml,docker-compose.production.yml"
         target: "kittygram_tests"
     - name: Run tests on server
       uses: appleboy/ssh-action@master
