@@ -175,6 +175,14 @@ jobs:
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
+            for attempt in $(seq 1 30); do
+              if sudo docker compose -f docker-compose.production.yml exec -T db pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; then
+                break
+              fi
+              echo "Ожидание PostgreSQL... попытка $attempt"
+              sleep 2
+            done
+            sudo docker compose -f docker-compose.production.yml exec -T db pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py collectstatic --no-input
             sudo docker compose -f docker-compose.production.yml exec -T backend python manage.py createsuperuser --noinput || true
