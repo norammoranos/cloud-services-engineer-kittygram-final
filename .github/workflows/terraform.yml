@@ -30,7 +30,6 @@ jobs:
       TF_VAR_folder_id: ${{ secrets.YC_FOLDER_ID }}
       TF_VAR_zone: ${{ vars.YC_ZONE || 'ru-central1-a' }}
       TF_VAR_ssh_public_key: ${{ secrets.VM_SSH_PUBLIC_KEY }}
-      YC_SERVICE_ACCOUNT_KEY_FILE: ${{ runner.temp }}/yc-key.json
 
     steps:
       - name: Check out the repo
@@ -43,8 +42,10 @@ jobs:
         env:
           YC_SERVICE_ACCOUNT_KEY_JSON: ${{ secrets.YC_SERVICE_ACCOUNT_KEY_JSON }}
         run: |
-          printf '%s' "$YC_SERVICE_ACCOUNT_KEY_JSON" > "$YC_SERVICE_ACCOUNT_KEY_FILE"
-          chmod 600 "$YC_SERVICE_ACCOUNT_KEY_FILE"
+          YC_KEY_FILE="$RUNNER_TEMP/yc-key.json"
+          printf '%s' "$YC_SERVICE_ACCOUNT_KEY_JSON" > "$YC_KEY_FILE"
+          chmod 600 "$YC_KEY_FILE"
+          echo "YC_SERVICE_ACCOUNT_KEY_FILE=$YC_KEY_FILE" >> "$GITHUB_ENV"
 
       - name: Terraform fmt
         run: terraform fmt -check
